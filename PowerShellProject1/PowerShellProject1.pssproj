@@ -32,9 +32,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="bin\Script.ps1" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="PresentationCore, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
       <Name>PresentationCore</Name>
       <AssemblyName>PresentationCore.dll</AssemblyName>
@@ -67,11 +64,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="bin\GUI\MainWindow.xaml" />
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="bin\" />
     <Folder Include="bin\GUI\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="bin\GUI\MainWindow.xaml" />
+    <Compile Include="bin\Script.ps1" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="Build" />
