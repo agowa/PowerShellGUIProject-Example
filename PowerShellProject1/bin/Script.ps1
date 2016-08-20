@@ -1,28 +1,48 @@
-﻿# Pre-Initialization
+﻿# Startup
 Split-Path -Parent $PSCommandPath | Set-Location
 
-# Initialization
+# Pre-Initialization
 [xml]$xamlMainWindow = ($(Get-Content ".\GUI\MainWindow.xaml") -join "`r`n").Replace('x:Class="PowerShellProject1.MainWindow"', "").Replace('mc:Ignorable="d"', "")
 
-#[xml]$xaml = @"
-#	<Window x:Class="WpfApplication1.MainWindow"
-#	        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-#	        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-#	        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-#	        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-#	        xmlns:local="clr-namespace:WpfApplication1"
-#	        mc:Ignorable="d"
-#	        Title="MainWindow" Height="350" Width="525">
-#	    <Grid>
-#	        <Button x:Name="button" Content="Button" HorizontalAlignment="Left" Margin="177,112,0,0" VerticalAlignment="Top" Width="75"/>
-#	    </Grid>
-#	</Window>
-#"@.Replace('x:Class="WpfApplication1.MainWindow"', "").Replace('mc:Ignorable="d"', "")
-
-# Post-Initialization
+# Initialization
 $reader=(New-Object System.Xml.XmlNodeReader $xamlMainWindow)
 $Window=[Windows.Markup.XamlReader]::Load($reader)
 
+# Post-Initialization
+$Window.FindName("radioButton").Add_Click({Write-Host "RadioButton pressed"})
+# Get all possible propertys
+# $Window.FindName("button") | Get-member Add* -MemberType Method -force | Sort-Object Name | Format-Table -AutoSize
+$Window.FindName("radioButton1").IsChecked = $true
+$Window.FindName("radioButton2").IsEnabled = $false
+$Window.FindName("textBox").set_Text("Hello")
+$Window.FindName("textBox").Add_TextChanged({Write-Host "TextChanged"})
+$Window.FindName("button").Add_Click( {
+		Write-Host "Button pressed"
+		if($Window.FindName("radioButton").IsChecked)
+		{
+			Write-Host "radoButton was checked"
+		} elseif($Window.FindName("radioButton1").IsChecked) {
+			Write-Host "radoButton1 was checked"
+		} elseif($Window.FindName("radioButton2").IsChecked) {
+			Write-Host "radoButton2 was checked"
+		} else {
+			Write-Host "no radioButton was checked"
+		}
+		$Window.FindName("radioButton3").set_Visibility([System.Windows.Visibility]::Visible)
+} )
+$Window.Add_SourceInitialized( {
+    ## Before the window's even displayed ...
+    ## We'll create a timer
+    $timer = new-object System.Windows.Threading.DispatcherTimer
+    ## Which will fire every second
+    $timer.Interval = [TimeSpan]"0:0:1"
+    ## And will invoke the $updateBlock
+    $timer.Add_Tick( $updateBlock )
+    ## Now start the timer
+    $timer.Start()
+ } )
+ $count = 0
+ $updateBlock = { Write-Host $count; ([ref]$count).Value++; Write-Host $count }
 
-# Main
+# Render GUI
 $Window.ShowDialog()
