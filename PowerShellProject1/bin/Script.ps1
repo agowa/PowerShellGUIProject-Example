@@ -42,7 +42,7 @@ $Window.Add_SourceInitialized( {
     $timer.Start()
  } )
  $count = 0
- $updateBlock = { Write-Host $count; ([ref]$count).Value++; Write-Host $count }
+ $updateBlock = { Write-Host $count; ([ref]$count).Value++; }
 
 # Render GUI
 $Window.ShowDialog()
