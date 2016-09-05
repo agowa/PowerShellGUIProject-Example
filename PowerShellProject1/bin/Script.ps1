@@ -1,7 +1,15 @@
 ﻿# Startup
 Split-Path -Parent $PSCommandPath | Set-Location
 
+# Hide PowerShell Window
+#$window = Add-Type -memberDefinition @"
+#[DllImport("user32.dll")]
+#public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+#"@ -name "Win32ShowWindowAsync" -namespace Win32Functions -PassThru;
+#$window::ShowWindow((Get-Process –id $pid).MainWindowHandle, 0);
+
 # Pre-Initialization
+Add-Type -AssemblyName presentationframework
 [xml]$xamlMainWindow = ($(Get-Content ".\GUI\MainWindow.xaml") -join "`r`n").Replace('x:Class="PowerShellProject1.MainWindow"', "").Replace('mc:Ignorable="d"', "")
 
 # Initialization
@@ -35,7 +43,7 @@ $Window.Add_SourceInitialized( {
     ## We'll create a timer
     $timer = new-object System.Windows.Threading.DispatcherTimer
     ## Which will fire every second
-    $timer.Interval = [TimeSpan]"0:0:1"
+    $timer.Interval = [TimeSpan]"0:0:01"
     ## And will invoke the $updateBlock
     $timer.Add_Tick( $updateBlock )
     ## Now start the timer
